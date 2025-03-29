@@ -13,14 +13,15 @@ if ($conn->connect_error) {
 }
 
 // Function to fetch data for a specific fuel type
-function getFuelData($conn, $tableName) {
+function getFuelData($conn, $tableName)
+{
     $sql = "SELECT SUM(fuel_sold) AS total_liters, SUM(amount_expected) AS total_amount 
             FROM $tableName 
             WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-    
+
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    
+
     return [
         'total_liters' => $row['total_liters'] ?? 0,
         'total_amount' => $row['total_amount'] ?? 0
@@ -41,6 +42,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -132,11 +134,15 @@ $conn->close();
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
-        <h1>Mabu Logistics</h1>
+        <a href="home.html">
+            <h1>Mabu Logistics</h1>
+        </a>
+
         <div class="navbar-links">
-            <a href="home.php">Home</a>
+            <a href="home.html">Home</a>
             <a href="kerosene.php">Kerosene</a>
             <a href="petrol.php">Petrol</a>
             <a href="diesel.php">Diesel</a>
@@ -173,4 +179,5 @@ $conn->close();
         </div>
     </div>
 </body>
+
 </html>

@@ -5,56 +5,56 @@ $amount_expected = "";
 
 // Check if "calculate" button is clicked
 if (isset($_POST['calculate'])) {
-    $fuel_start = $_POST['fuel-start'];
-    $fuel_end = $_POST['fuel-end'];
+  $fuel_start = $_POST['fuel-start'];
+  $fuel_end = $_POST['fuel-end'];
 
-    // Ensure valid input
-    if ($fuel_start >= $fuel_end) {
-        $fuel_sold = $fuel_start - $fuel_end;
-        $amount_expected = $fuel_sold * 151.39;
-    } else {
-        $fuel_sold = "";
-        $amount_expected = "";
-        echo "<script>alert('Fuel at the end of the day cannot be greater than at the start!');</script>";
-    }
+  // Ensure valid input
+  if ($fuel_start >= $fuel_end) {
+    $fuel_sold = $fuel_start - $fuel_end;
+    $amount_expected = $fuel_sold * 151.39;
+  } else {
+    $fuel_sold = "";
+    $amount_expected = "";
+    echo "<script>alert('Fuel at the end of the day cannot be greater than at the start!');</script>";
+  }
 }
 
 // Handle form submission
 if (isset($_POST['submit'])) {
-    $fuel_start = $_POST['fuel-start'];
-    $fuel_end = $_POST['fuel-end'];
-    $fuel_sold = $_POST['fuel-sold'];
-    $amount_expected = $_POST['amount-expected'];
+  $fuel_start = $_POST['fuel-start'];
+  $fuel_end = $_POST['fuel-end'];
+  $fuel_sold = $_POST['fuel-sold'];
+  $amount_expected = $_POST['amount-expected'];
 
-    // Database connection
-    $conn = new mysqli("localhost", "root", "", "mabu");
+  // Database connection
+  $conn = new mysqli("localhost", "root", "", "mabu");
 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+  if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+  }
 
-    // Insert data into MySQL
-    $stmt = $conn->prepare("INSERT INTO kerosene (fuel_start, fuel_end, fuel_sold, amount_expected) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("dddd", $fuel_start, $fuel_end, $fuel_sold, $amount_expected);
+  // Insert data into MySQL
+  $stmt = $conn->prepare("INSERT INTO kerosene (fuel_start, fuel_end, fuel_sold, amount_expected) VALUES (?, ?, ?, ?)");
+  $stmt->bind_param("dddd", $fuel_start, $fuel_end, $fuel_sold, $amount_expected);
 
-    if ($stmt->execute()) {
-        echo "<script>alert('Data successfully submitted!');</script>";
-    } else {
-        echo "<script>alert('Error submitting data.');</script>";
-    }
+  if ($stmt->execute()) {
+    echo "<script>alert('Data successfully submitted!');</script>";
+  } else {
+    echo "<script>alert('Error submitting data.');</script>";
+  }
 
-    $stmt->close();
-    $conn->close();
+  $stmt->close();
+  $conn->close();
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kerosene Management</title>
   <style>
-    
     * {
       margin: 0;
       padding: 0;
@@ -183,7 +183,7 @@ if (isset($_POST['submit'])) {
 
     @media (max-width: 600px) {
       .form-container {
-          padding: 20px;
+        padding: 20px;
       }
     }
 
@@ -213,9 +213,12 @@ if (isset($_POST['submit'])) {
 
 <body>
   <nav class="navbar">
-    <h1>Mabu Logistics</h1>
+    <a href="home.html">
+      <h1>Mabu Logistics</h1>
+    </a>
+
     <div class="navbar-links">
-      <a href="home.php">Home</a>
+      <a href="home.html">Home</a>
       <a href="kerosene.php">Kerosene</a>
       <a href="petrol.php">Petrol</a>
       <a href="diesel.php">Diesel</a>
@@ -223,7 +226,7 @@ if (isset($_POST['submit'])) {
       <a href="dashboard.php">Dashboard</a>
     </div>
   </nav>
-  
+
   <div class="container">
     <h2>Kerosene Management</h2>
     <p>Price per liter: Ksh 151.39</p>
@@ -232,30 +235,33 @@ if (isset($_POST['submit'])) {
       <h1>Fuel Sales Report</h1>
       <form action="kerosene.php" method="post">
         <form action="kerosene.php" method="post">
-        <div class="form-group">
-          <label for="fuel-start">Fuels at the start of the day</label>
-          <input type="number" id="fuel-start" value="<?= htmlspecialchars($fuel_start) ?>" name="fuel-start" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="fuel-end">Fuel at the end of the day</label>
-          <input type="number" id="fuel-end" value="<?= htmlspecialchars($fuel_end) ?>"  name="fuel-end" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="fuel-sold">Amount of fuel sold</label>
-          <input type="number" id="fuel-sold" value="<?= htmlspecialchars($fuel_sold) ?>" name="fuel-sold" readonly>
-        </div>
-        
-        <div class="form-group">
-          <label for="amount-expected">Amount expected (Ksh)</label>
-          <input type="number" id="amount-expected" value="<?= htmlspecialchars($amount_expected) ?>" name="amount-expected" readonly>
-        </div>
-        
-        <button type="submit" name="calculate">Calculate</button>
-        <button type="submit" name="submit">Submit</button>
-      </form>
+          <div class="form-group">
+            <label for="fuel-start">Fuels at the start of the day</label>
+            <input type="number" id="fuel-start" value="<?= htmlspecialchars($fuel_start) ?>" name="fuel-start"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="fuel-end">Fuel at the end of the day</label>
+            <input type="number" id="fuel-end" value="<?= htmlspecialchars($fuel_end) ?>" name="fuel-end" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fuel-sold">Amount of fuel sold</label>
+            <input type="number" id="fuel-sold" value="<?= htmlspecialchars($fuel_sold) ?>" name="fuel-sold" readonly>
+          </div>
+
+          <div class="form-group">
+            <label for="amount-expected">Amount expected (Ksh)</label>
+            <input type="number" id="amount-expected" value="<?= htmlspecialchars($amount_expected) ?>"
+              name="amount-expected" readonly>
+          </div>
+
+          <button type="submit" name="calculate">Calculate</button>
+          <button type="submit" name="submit">Submit</button>
+        </form>
     </div>
   </div>
 </body>
+
 </html>
