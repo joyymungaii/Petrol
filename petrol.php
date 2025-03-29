@@ -1,9 +1,66 @@
+<?php
+// Initialize variables
+$fuel_start = "";
+$fuel_end = "";
+$fuel_sold = "";
+$amount_expected = "";
+$diesel_price = 176.58;
+
+// Check if "calculate" button is clicked
+if (isset($_POST['calculate'])) {
+    $fuel_start = $_POST['fuel-start'];
+    $fuel_end = $_POST['fuel-end'];
+
+    // Ensure valid input
+    if ($fuel_start >= $fuel_end) {
+        $fuel_sold = $fuel_start - $fuel_end;
+        $amount_expected = $fuel_sold * $diesel_price;
+    } else {
+        $fuel_sold = "";
+        $amount_expected = "";
+        echo "<script>alert('Fuel at the end of the day cannot be greater than at the start!');</script>";
+    }
+}
+
+// Handle form submission
+if (isset($_POST['submit'])) {
+    $fuel_start = $_POST['fuel-start'];
+    $fuel_end = $_POST['fuel-end'];
+    $fuel_sold = $_POST['fuel-sold'];
+    $amount_expected = $_POST['amount-expected'];
+
+    // Database connection
+    $conn = new mysqli("localhost", "root", "", "mabu");
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Insert data into MySQL
+    $stmt = $conn->prepare("INSERT INTO petrol (fuel_start, fuel_end, fuel_sold, amount_expected) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("dddd", $fuel_start, $fuel_end, $fuel_sold, $amount_expected);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Data successfully submitted!');</script>";
+        // Clear form fields after submission
+        $fuel_start = "";
+        $fuel_end = "";
+        $fuel_sold = "";
+        $amount_expected = "";
+    } else {
+        echo "<script>alert('Error submitting data.');</script>";
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Diesel Management</title>
+  <title>Petrol Management</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     /* Reset and base styling */
@@ -126,6 +183,7 @@
       cursor: pointer;
       width: 100%;
       transition: background-color 0.3s;
+      margin-top: 10px;
     }
 
     button:hover {
@@ -165,43 +223,41 @@
     <nav class="navbar">
         <h1>Mabu Logistics</h1>
         <div class="navbar-links">
-            <a href="home.html">Home</a>
-            <a href="kerosene.html">Kerosene</a>
-            <a href="petrol.html">Petrol</a>
-            <a href="diesel.html">Diesel</a>
-            <a href="login.html">Logout</a>
+          <a href="home.php">Home</a>
+          <a href="kerosene.php">Kerosene</a>
+          <a href="petrol.php">Petrol</a>
+          <a href="diesel.php">Diesel</a>
+          <a href="login.php">Logout</a>
+          <a href="dashboard.php">Dashboard</a>
         </div>
     </nav>
   <div class="container">
-    <h2>Diesel Management</h2>
-    <p>Price per liter: Ksh 167.06</p>
+    <h2>Petrol Management</h2>
+    <p>Price per liter: Ksh 176.58</p>
 
     <div class="form-container">
-      <h1>Fuel Sales Report</h1>
-      <form>
-        <div class="form-group">
-          <label for="fuel-start">Fuels at the start of the day</label>
-          <input type="number" id="fuel-start" name="fuel-start" required>
+            <h1>Fuel Sales Report</h1>
+            <form method="POST" action="">
+                <div class="form-group">
+                    <label>Fuel at the start of the day</label>
+                    <input type="number" name="fuel-start" value="<?= htmlspecialchars($fuel_start) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label>Fuel at the end of the day</label>
+                    <input type="number" name="fuel-end" value="<?= htmlspecialchars($fuel_end) ?>" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount of fuel sold</label>
+                    <input type="number" name="fuel-sold" value="<?= htmlspecialchars($fuel_sold) ?>" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Amount expected (Ksh)</label>
+                    <input type="number" name="amount-expected" value="<?= htmlspecialchars($amount_expected) ?>" readonly>
+                </div>
+                <button type="submit" name="calculate">Calculate</button>
+                <button type="submit"  name="submit">Submit</button>
+            </form>
         </div>
-        
-        <div class="form-group">
-          <label for="fuel-end">Fuel at the end of the day</label>
-          <input type="number" id="fuel-end" name="fuel-end" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="fuel-sold">Amount of fuel sold</label>
-          <input type="number" id="fuel-sold" name="fuel-sold" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="amount-expected">Amount expected (Ksh)</label>
-          <input type="number" id="amount-expected" name="amount-expected" required>
-        </div>
-        
-        <button type="submit">Submit</button>
-      </form>
-    </div>
   </div>
 </body>
 </html>
